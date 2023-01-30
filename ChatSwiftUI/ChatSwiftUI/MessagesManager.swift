@@ -12,6 +12,7 @@ import FirebaseFirestoreSwift
 
 class MessagerManger: ObservableObject {
     @Published private(set) var  messages: [Message] = []
+    @Published private(set) var lastMessage = ""
     let db = Firestore.firestore()
     
     init() {
@@ -34,10 +35,19 @@ class MessagerManger: ObservableObject {
             }
             
             self.messages.sort { $0.timestamp < $1.timestamp }
+            
+            if let id = self.messages.last?.id {
+                self.lastMessage = id
+            }
         }
     }
     
     func sendMessage(text: String) {
-        
+        do {
+            let newMessage = Message(id: "\(UUID())", text: text, received: false, timestamp: Date())
+            try db.collection("messages").document().setData(from: newMessage)
+        } catch {
+            print("Error adding message to Firestore: \(error)")
+        }
     }
 }
