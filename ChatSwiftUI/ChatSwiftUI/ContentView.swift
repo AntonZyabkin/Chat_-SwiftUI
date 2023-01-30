@@ -8,9 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var messagerManger = MessagerManger()
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            VStack {
+                TitleRow()
+                ScrollView {
+                    ForEach(messagerManger.messages, id: \.id) { message in
+                        MessageBubble(message: message)
+                    }
+                }
+                .padding(.top, 10)
+                .background(.white)
+                .cornerRadius(30, corners: [.topLeft, .topRight])
+            }
+            .background(Color("Peach"))
+            
+            MessageField()
+        }
     }
 }
 
